@@ -90,7 +90,7 @@ After that, get tool updates with `git pull upstream main`. Never push your pers
 ## Troubleshooting
 - **It didn't offer setup / it doesn't seem to know the rules:** make sure Claude Code was started in the `PCAssistant` folder.
 - **`pca-*` commands not found:** open a new terminal. On Windows, `%USERPROFILE%\.pca\bin` is added to your PATH, and new terminals pick it up.
-- **Linux: it keeps asking you to run `sudo -v`:** during setup it can suggest a small sudoers tweak so your `sudo -v` reaches its shell. It explains the trade-off first.
+- **Linux/macOS: admin commands keep failing, or it keeps asking you to run `sudo -v`:** Claude's shell usually can't see a sudo login you made in another terminal. During setup it offers a fix that suits your system: a small sudoers tweak, a scoped passwordless rule for specific commands (needed with **sudo-rs**, the default on newer Ubuntu), or you running the admin commands yourself. It explains the trade-offs first, and **you** install any sudoers change yourself.
 - **Windows: scripts are blocked:** the helpers run with `-ExecutionPolicy Bypass` for that single command. Your system policy isn't changed.
 
 ## License

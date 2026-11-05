@@ -13,8 +13,8 @@ command: none
 scripts:
   posix: scan.sh, install-commands.sh
   windows: scan.ps1, install-commands.ps1
-version: 1.0
-updated: 2026-11-04
+version: 1.1
+updated: 2026-11-05
 ---
 
 # first-time-setup
@@ -54,7 +54,7 @@ Ask in 2 rounds of at most 4 questions. Adapt the options to what the scan found
    - *Broad autonomy* (ask only for destructive actions).
 2. **Elevation method.** Never ask for passwords.
    - Linux/BSD/macOS:
-     - *Timed sudo cache* (the user runs `sudo -v` when asked; see the note below).
+     - *Timed sudo cache* (the user runs `sudo -v` when asked). **Only offer this when the sudo is classic sudo** (`sudo -V` prints "Sudo version"), and it may need the global-timestamp drop-in (see step 6). **sudo-rs** (`sudo -V` prints "sudo-rs"; the default on Ubuntu 25.10+) caches per terminal and has no global option, so this choice doesn't work there.
      - *User runs admin commands* (Claude prepares them).
      - *Scoped passwordless sudo* for a vetted command list.
      - *Full passwordless sudo* (warn: weak security).
@@ -117,9 +117,13 @@ Ask a follow-up only if an answer needs a detail (e.g. which commands go on a sc
 ## Step 6: Elevation and rollback tools (Tier 2: approval per step)
 Each step: explain it, get approval, reserve an ID, back up anything you'll edit, apply, verify, log.
 
-- **Unix timed sudo cache:** ask the user to run `sudo -v` (in Claude Code they can type `! sudo -v`, or use any terminal), then test `sudo -n true`.
-  - It may fail because sudo's default per-terminal timestamp doesn't reach Claude's shell. In that case, offer a drop-in the **user** installs: `/etc/sudoers.d/pca-timestamp` containing `Defaults:<user> timestamp_type=global` (validate it with `visudo -cf`). Trade-off: for about 15 minutes after `sudo -v`, any process the user runs can use sudo.
-  - Log the change, and record it in SYSTEM.md → Elevation.
+- **Identify the sudo implementation first:** run `sudo -V | head -1`. It shows either classic sudo ("Sudo version …") or **sudo-rs** ("sudo-rs …"). Also check whether `doas` is in use.
+- **Timed sudo cache (classic sudo only):** ask the user to run `sudo -v`, then test `sudo -n true`. It usually fails, because the default per-terminal timestamp doesn't reach Claude's shell. If so, offer a drop-in the **user** installs: `/etc/sudoers.d/pca-timestamp` containing `Defaults:<user> timestamp_type=global`. Trade-off: for about 15 minutes after `sudo -v`, any process the user runs can use sudo.
+- **sudo-rs:** there's no global timestamp, so offer scoped passwordless sudo, the user running admin commands, or switching to classic sudo (Ubuntu: `sudo update-alternatives --config sudo`, if `sudo.ws` is installed).
+- **Scoped passwordless sudo:** write `profile/sudoers-pca` with `Cmnd_Alias` lists of **absolute paths**, then validate it with `/usr/sbin/visudo -cf` (or `visudo-rs -cf`). On distros where coreutils binaries are symlinks (e.g. Ubuntu 26.04's uutils: `/usr/bin/cp → gnucp`), list **both the symlink and its target** (`readlink -f`). Tell the user plainly that package managers, `systemctl`, and `cp`/`chown`-type commands are root-equivalent, so the list limits the scope of normal use but isn't a security boundary. The **user** installs it in their own terminal:
+  `sudo visudo -cf <file> && sudo install -m 0440 -o root -g root <file> /etc/sudoers.d/pca && sudo visudo -c`
+  Then verify with `sudo -n true` and a couple of listed commands, and confirm an unlisted one (e.g. `sudo -n whoami`) is still refused.
+- In every case: validate any sudoers file before it's installed, log the change, and record the method in SYSTEM.md → Elevation.
 - **etckeeper:** install it with the native package manager. It makes its own first commit. Verify with `sudo etckeeper vcs log -1`.
 - **Timeshift / Snapper:** install, configure (rsync or btrfs mode, the schedule from question 6), take the first snapshot, verify it in the list. Timeshift's rsync mode excludes home folders by default. Say so.
 - **Time Machine:** check `tmutil destinationinfo`. If no destination is configured, explain how to set one up (the user does it in System Settings). Test `tmutil localsnapshot`.
@@ -161,3 +165,4 @@ Each step's undo is in its CHANGELOG entry. A full reset: run every entry's undo
 
 ## Changelog
 - 1.0 (2026-11-04): created.
+- 1.1 (2026-11-05): elevation step now detects sudo-rs (no global timestamp) and covers scoped passwordless sudo, including symlinked binaries. Learned on Ubuntu 26.04.

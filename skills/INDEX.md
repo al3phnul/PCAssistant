@@ -13,7 +13,7 @@ The register of every skill available to the PC Assistant. **Read this file at s
 
 | Skill | Purpose | Use when | Command | Platforms | Admin | Tier | Path | Updated |
 |---|---|---|---|---|---|---|---|---|
-| first-time-setup | Scan the system, ask the user's preferences, generate the profile, logs, baseline, commands, rollback tools | User says "First time setup", profile missing, or "re-scan my system" | none | all | some steps | 2 | `setup/first-time-setup/` | 2026-11-04 |
+| first-time-setup | Scan the system, ask the user's preferences, generate the profile, logs, baseline, commands, rollback tools | User says "First time setup", profile missing, or "re-scan my system" | none | all | some steps | 2 | `setup/first-time-setup/` | 2026-11-05 |
 | change-backup | Back up / restore files (and Windows registry keys) tied to a change ID | Before editing any config file; undoing a change | `pca-backup` | all | if file needs it | 1 | `maintenance/change-backup/` | 2026-11-04 |
 | system-baseline | Read-only snapshot of packages, services, jobs, settings; diff snapshots | Setup; "what changed since…"; before/after big changes | `pca-baseline` | all | no | 0 | `maintenance/system-baseline/` | 2026-11-04 |
 

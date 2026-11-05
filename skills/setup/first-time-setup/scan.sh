@@ -114,6 +114,7 @@ sec "Elevation"
 el=""; for e in sudo doas pkexec run0; do has $e && el="$el $e"; done
 kv "Tools" "${el# }"
 if has sudo; then
+  kv "sudo implementation" "$(sudo -V 2>/dev/null | first)$(sudo -V 2>/dev/null | grep -qi 'sudo-rs' && echo ' (sudo-rs: per-terminal cache, no timestamp_type=global)')"
   if sudo -n true 2>/dev/null; then kv "sudo now" "available without prompt (cached or NOPASSWD)"; else kv "sudo now" "needs authentication"; fi
   kv "In admin group" "$(id -Gn | tr ' ' '\n' | grep -Ex 'sudo|wheel|admin' | tr '\n' ' ')"
 fi
