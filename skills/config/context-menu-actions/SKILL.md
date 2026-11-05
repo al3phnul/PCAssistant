@@ -12,7 +12,7 @@ needs_admin: only to install the nautilus-python package
 command: none
 scripts:
   gnome: gnome-files/pca_context_menu.py, gnome-files/install.sh
-version: 1.0
+version: 1.0.1
 updated: 2026-11-05
 ---
 
@@ -40,7 +40,8 @@ Each copy action shows a notification (`notify-send`) with a preview. The clipbo
 ### Install
 1. Install the package (Tier 2): `python3-nautilus` on Debian/Ubuntu, `nautilus-python` on Fedora, `python-nautilus` on Arch. Also `wl-clipboard` or `xclip`, if they're missing.
 2. `sh skills/config/context-menu-actions/gnome-files/install.sh`. This symlinks the extension into `~/.local/share/nautilus-python/extensions/`, so edits to the source take effect after a restart.
-3. Restart Files: `nautilus -q`. **This closes any open Files windows**, so tell the user first and let them pick the moment.
+3. Restart Files: `nautilus -q`. **This closes any open Files windows**, so tell the user first and let them pick the moment. Then let the session start it again: either the user opens Files, or Claude runs `gdbus introspect --session --dest org.gnome.Nautilus --object-path /org/gnome/Nautilus >/dev/null`, which D-Bus-activates it under the user's systemd. **Don't** start `nautilus` from Claude's shell, even with `nohup &`: it's killed when the command ends.
+   Check it loaded: `grep -E 'nautilus-python|libpython' /proc/$(pgrep -x nautilus)/maps`.
 4. Verify: right-click a file and check the items appear. Test Copy Path with `wl-paste`.
 
 ### Add or change an action
@@ -59,8 +60,9 @@ Write an `_act_*` function and register it in `get_file_items` (or `get_backgrou
 Remove the symlink (or `.desktop` / registry key / Quick Action), restart the file manager, and optionally remove the package. Each install is logged with its own undo steps.
 
 ## Platform status
-- GNOME Files 50 (Ubuntu 26.04, Wayland): the actions were unit-tested against the live clipboard. Checking the menu in Files itself is pending a Files restart.
+- GNOME Files 50 (Ubuntu 26.04, Wayland): the actions were unit-tested against the live clipboard. After a restart, Files loaded the extension runtime with no errors in the journal. The user does the final visual check of the menu.
 - The other desktops are documented recipes only, not yet built or tested.
 
 ## Changelog
 - 1.0 (2026-11-05): created (GNOME implementation plus recipes for other platforms).
+- 1.0.1 (2026-11-05): restart steps now use D-Bus activation; a `nohup` launch from Claude's shell doesn't survive.

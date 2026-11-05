@@ -43,6 +43,7 @@ Open the folder in VS Code, start Claude Code, and ask in plain language:
 
 | You say | What happens |
 |---|---|
+| "Give my PC a health check, any suggestions?" | Runs `pca-health` (read-only): pending updates and reboot, memory hogs, disk space, firewall and open ports, battery, startup items. Then offers a pick list of fixes. |
 | "My disk is almost full, what can I clean up?" | Read-only analysis first, then a list of what it would remove. Nothing is deleted until you approve. |
 | "Why is boot so slow?" | Diagnoses with your OS's tools (`systemd-analyze`, startup items, Event Viewer…) and suggests fixes. |
 | "Update everything" | Runs your system's updates. Takes a snapshot first if that's set up. |
