@@ -1,0 +1,42 @@
+---
+name: skill-name                # kebab-case, matches folder name
+summary: One line — what this skill does.
+triggers:                       # phrases/situations that should make Claude reach for this skill
+  - "example request"
+platforms: [linux, macos, windows]   # which OSes this skill supports
+scope: shared                   # shared (generic, synced) | personal (this user/machine only)
+tier: 1                         # highest autonomy tier of any step (0 free, 1 do-then-report, 2 ask-first)
+needs_admin: false
+command: pca-skill-name         # installed command, or "none"
+scripts:                        # files in this folder, per platform
+  posix: pca-skill-name.sh
+  windows: pca-skill-name.ps1
+version: 1.0
+updated: YYYY-MM-DD
+---
+
+# Skill name
+
+## Purpose
+What problem this solves and when to use it.
+
+## Inputs
+What you need from the user or the system before starting.
+
+## Steps
+1. …
+2. …
+
+Per-OS notes where steps differ.
+
+## Verification
+How to confirm it worked.
+
+## Rollback
+How to undo what this skill does.
+
+## Logging
+What to record in CHANGELOG / journal.
+
+## Changelog
+- 1.0 (YYYY-MM-DD): created.
