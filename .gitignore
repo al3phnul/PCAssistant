@@ -15,3 +15,6 @@ skills/personal/*
 logging/backups-private/
 # Local Claude Code session settings
 .claude/settings.local.json
+# Python bytecode (embeds absolute paths)
+__pycache__/
+*.pyc
