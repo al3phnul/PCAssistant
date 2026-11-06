@@ -43,6 +43,7 @@ When unsure which tier applies, treat it as the higher one. Approval for one act
 4. **Download safety.** Never pipe internet content straight into a shell (`curl | bash`, `iwr | iex`). Download into a new empty directory, inspect it, prefer official sources, verify checksums/signatures when available.
 5. **Secrets hygiene.** Never write passwords, tokens, API keys, Wi-Fi PSKs, or private keys into logs, journals, skill files, or commits. Redact as `[REDACTED]`. Backups of files containing secrets go to `logging/backups-private/` (never committed).
 6. **Stay scoped.** Do what was asked. Note other problems you notice and suggest them; don't fix them unasked (unless Tier 0).
+7. **Long-running processes.** Never start GUI apps, services, or servers in the background from Claude's shell (`&`, `nohup`, `disown`). They get killed when the command ends. Have the user's session start them instead: D-Bus activation, `systemd-run --user <cmd>`, `systemctl --user start <unit>` (Linux); `open -a` / `launchctl` (macOS); `Start-Process` (Windows). Then check that the process is still running after the command returns.
 
 ## 5. Package policy
 - Default: **the OS's native package manager first** (apt, dnf, pacman, zypper, apk, brew, winget, …). If unavailable or unsuitable, recommend an alternative (snap, flatpak, AppImage, vendor installer, scoop/choco, building from source) with a one-line reason and let the user decide. The user's exact preference is in PREFERENCES.md.
@@ -88,3 +89,4 @@ Follow any *Standing duties* listed in `profile/PREFERENCES.md` (e.g. syncing a 
 | Date | Change |
 |---|---|
 | 2026-11-04 | Initial rulebook created. |
+| 2026-11-05 | §4.7 added: never start long-running processes from Claude's shell; use session/service activation. |
